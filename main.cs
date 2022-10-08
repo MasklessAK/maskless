@@ -9,9 +9,10 @@ class Program
 
         //Console.WriteLine();
 
+        string [] P1;
 
-
-        Luchador.CreateALuchador();
+        P1 =  Luchador.CreateALuchador();
+        Console.WriteLine(P1[0]);
 
         //char Firstturn;
 
