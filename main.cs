@@ -9,10 +9,12 @@ class Program
 
         //Console.WriteLine();
 
-        string [] P1;
+       string [,] P1;
 
-        P1 =  Luchador.CreateALuchador();
-        Console.WriteLine(P1[0]);
+        //P1 =  
+        P1=Card.AllCards();
+        
+        Console.WriteLine((P1[0,0]) + "_____________________________");
 
         //char Firstturn;
 

@@ -35,7 +35,7 @@ class Luchador
     public static string[] CreateALuchador()
     {
       // path to the csv file
-      string[] luchadorfile =  new string[11];;
+      string[] luchadorfile =  new string[11];
       string path = "Luchador.csv";
       int i = 0;
       Guid guid = Guid.NewGuid();
