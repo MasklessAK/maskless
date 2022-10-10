@@ -90,7 +90,7 @@ class Card
 
                 }
               
-              
+              //THIS RIGHT HERE
               cards[i] = new Card(fullcards[i, 0], fullcards[i, 1], fullcards[i, 2], Convert.ToInt32(fullcards[i, 3]), fullcards[i, 4], fullcards[i, 5], Convert.ToInt32(fullcards[i, 6]), Convert.ToInt32(fullcards[i, 7]), Convert.ToInt32(fullcards[i, 8]), Convert.ToInt32(fullcards[i, 9]));
               //Console.WriteLine(cards[i].NAME);
               /*
