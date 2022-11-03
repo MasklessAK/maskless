@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 
 class GameMechanics
 {
@@ -99,6 +100,16 @@ class GameMechanics
             return match;
         }
     }
+
+    public static double Prob()
+    {
+        double probability;
+        DateTimeOffset now = (DateTimeOffset)DateTime.UtcNow;
+        probability = Convert.ToInt64(now.ToUnixTimeMilliseconds());
+        probability = probability % 100;
+        return probability;
+    }
+
 
 
 
