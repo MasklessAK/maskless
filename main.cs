@@ -33,19 +33,39 @@ class Program
         P1 = Card.GetDeck(Deck1);
         //P1 DECK IS SHUFFLED
         P1 = Card.Shuffle(P1);
+
+
+        /* CREATE P2 DECK VARIABLE
+        List<Card> P2 = new List<Card>();
+        //GET THE DECK FROM NAME ---MAKE A DECK NAME SYSTEM---
+        string Deck2 = "Deck2.csv";
+        //DECK IS IN P2
+        P2 = Card.GetDeck(Deck2);
+        //P2 DECK IS SHUFFLED
+        P2 = Card.Shuffle(P2);*/
+
+
+
+        // Name of the players file
         string p1filename = "Luchador.csv";
         string cpufilename = "Cpu.csv";
 
+
+        //Creates Two Players
         Luchador PLAYER1 = Luchador.CreateALuchador(p1filename);
         Luchador CPU = Luchador.CreateALuchador(cpufilename);
         Console.WriteLine(PLAYER1.NAME);
         Console.WriteLine(CPU.NAME);
+
+        //Create a temporary Card List to use in change card method()
         List<Card> TEMPCARD = new List<Card>();
+
+        // create a temp card to use in for buff and nefrs on character
         Card TEMP = new Card();
 
 
 
-
+        // Create lists,stacks and queue we are going to use in the game
         List<Card> P1Hand = new List<Card>();
         Queue<Card> P1Cooldown = new Queue<Card>();
         Stack<Card> P1Board = new Stack<Card>();
@@ -59,18 +79,19 @@ class Program
         int turns = 0;
         bool pinned = false;
         int P1selection = 0;
+
         int lenP1Hand = P1Hand.Count();
         int r = 0;
 
 
-
+        // DRAW 5 CARDS FROM DECK -P1
         P1Hand.Add(P1[0]);
         P1Hand.Add(P1[1]);
         P1Hand.Add(P1[2]);
         P1Hand.Add(P1[3]);
         P1Hand.Add(P1[4]);
 
-
+        // REMOVE THE 5 CARDS IN HAND FROM THE DECK
         P1.Remove(P1[0]);
         P1.Remove(P1[0]);
         P1.Remove(P1[0]);
@@ -87,7 +108,7 @@ class Program
 
 
 
-
+        turns++;
         Console.WriteLine("|Turn #" + turns + "|");
         Console.WriteLine("---------");
         Console.WriteLine("");
@@ -124,6 +145,10 @@ class Program
         {
             Console.WriteLine("NO CARD ON COOLDOWN");
         }
+
+
+
+        // CHECK FOR EMPTY HAND
         if (P1Hand.Count() == 0)
         {
             //check the deck
@@ -185,6 +210,7 @@ class Program
 
 
 
+
         Console.Write("Press 1 to Play a Card | Press 2 to change a card:  ");
         P1selection = Convert.ToInt32(Console.ReadLine());
         Console.WriteLine("\n");
@@ -230,79 +256,100 @@ class Program
                         CPU.HP = CPU.HP - DAMAGE;
                         Console.WriteLine(CPU.NAME + " Now has " + CPU.HP + " HP ");
 
+
+
+
                     }
+
+                    else if (CPU.SPD > PLAYER1.SPD)
+                    {
+                        //CPU IS FASTER CPU goes first (need prolly need AI...)
+                        Console.WriteLine("CPU is faster");
+                    }
+
                     else
                     {
-                        Console.WriteLine("Can only use light attacks in the first 4 turns");
+                        //SPEED TIE// get random number if its 0 P1 goes first if its 1 p2 goes first
+
+                        Console.WriteLine("Speed Tie");
                     }
-
-                    //ADD BUFFS OR NERFS OF THE CARDS
-                    Console.WriteLine("DEFAULT PLAYER 1 POWER: " + PLAYER1.PWR);
-                    Console.WriteLine("DEFAULT PLAYER 1 SPEED: " + PLAYER1.SPD);
-                    Console.WriteLine("DEFAULT CPU POWER: " + CPU.PWR);
-                    Console.WriteLine("DEFAULT CPU SPEED: " + CPU.SPD);
-
-                    if (TEMP.GIMMICK == "FACE")
-                    {
-                        if (TEMP.TYPE1 == "PWR")
-                        {
-                            PLAYER1.PWR = PLAYER1.PWR + TEMP.EFF1;
-                            Console.WriteLine("PLAYER 1 POWER: " + PLAYER1.PWR);
-
-
-                        }
-                        else if (TEMP.TYPE1 == "SPD")
-                        {
-                            PLAYER1.SPD = PLAYER1.SPD + TEMP.EFF1;
-                            Console.WriteLine("PLAYER 1 SPEED: " + PLAYER1.SPD);
-
-                        }
-                        else if (TEMP.TYPE1 == "RESLNCY")
-                        {
-                            PLAYER1.RESLNCY = PLAYER1.RESLNCY + TEMP.EFF1;
-                        }
-                        else if (TEMP.TYPE1 == "TCHNQ")
-                        {
-                            PLAYER1.TCHNQ = PLAYER1.TCHNQ + TEMP.EFF1;
-                        }
-                    }
-
-
-                    else if (TEMP.GIMMICK == "HEEL")
-                    {
-                        if (TEMP.TYPE1 == "PWR")
-                        {
-                            CPU.PWR = CPU.PWR + TEMP.EFF1;
-                            Console.WriteLine("CPU POWER: " + CPU.PWR);
-                        }
-                        else if (TEMP.TYPE1 == "SPD")
-                        {
-                            CPU.SPD = CPU.SPD + TEMP.EFF1;
-                            Console.WriteLine("CPU SPEED: " + CPU.SPD);
-                        }
-                        else if (TEMP.TYPE1 == "RESLNCY")
-                        {
-                            CPU.RESLNCY = CPU.RESLNCY + TEMP.EFF1;
-                        }
-                        else if (TEMP.TYPE1 == "TCHNQ")
-                        {
-                            CPU.TCHNQ = CPU.TCHNQ + TEMP.EFF1;
-                        }
-                    }
-
-
                 }
-                else if (turns % 5 == 0)
+                else if (P1Hand[P1selection].TYPE == "HEAVY ATTACK" || P1Hand[P1selection].TYPE == "S - HEAVY ATTACK" || P1Hand[P1selection].TYPE == "GIMMICK")
                 {
-                    //Create Signature Card  and give it to players...
-                    Console.WriteLine("SIGNATURE TIME");
+                    Console.WriteLine("Can't Play This Turn");
                 }
 
-                else if (turns > 5)
+
+                //ADD BUFFS OR NERFS OF THE CARDS
+                Console.WriteLine("DEFAULT PLAYER 1 POWER: " + PLAYER1.PWR);
+                Console.WriteLine("DEFAULT PLAYER 1 SPEED: " + PLAYER1.SPD);
+                Console.WriteLine("DEFAULT CPU POWER: " + CPU.PWR);
+                Console.WriteLine("DEFAULT CPU SPEED: " + CPU.SPD);
+
+                if (TEMP.GIMMICK == "FACE")
                 {
-                    Console.WriteLine("more than 5");
+                    if (TEMP.TYPE1 == "PWR")
+                    {
+                        PLAYER1.PWR = PLAYER1.PWR + TEMP.EFF1;
+                        Console.WriteLine("PLAYER 1 POWER: " + PLAYER1.PWR);
+
+
+                    }
+                    else if (TEMP.TYPE1 == "SPD")
+                    {
+                        PLAYER1.SPD = PLAYER1.SPD + TEMP.EFF1;
+                        Console.WriteLine("PLAYER 1 SPEED: " + PLAYER1.SPD);
+
+                    }
+                    else if (TEMP.TYPE1 == "RESLNCY")
+                    {
+                        PLAYER1.RESLNCY = PLAYER1.RESLNCY + TEMP.EFF1;
+                    }
+                    else if (TEMP.TYPE1 == "TCHNQ")
+                    {
+                        PLAYER1.TCHNQ = PLAYER1.TCHNQ + TEMP.EFF1;
+                    }
                 }
+
+
+                else if (TEMP.GIMMICK == "HEEL")
+                {
+                    if (TEMP.TYPE1 == "PWR")
+                    {
+                        CPU.PWR = CPU.PWR + TEMP.EFF1;
+                        Console.WriteLine("CPU POWER: " + CPU.PWR);
+                    }
+                    else if (TEMP.TYPE1 == "SPD")
+                    {
+                        CPU.SPD = CPU.SPD + TEMP.EFF1;
+                        Console.WriteLine("CPU SPEED: " + CPU.SPD);
+                    }
+                    else if (TEMP.TYPE1 == "RESLNCY")
+                    {
+                        CPU.RESLNCY = CPU.RESLNCY + TEMP.EFF1;
+                    }
+                    else if (TEMP.TYPE1 == "TCHNQ")
+                    {
+                        CPU.TCHNQ = CPU.TCHNQ + TEMP.EFF1;
+                    }
+                }
+
+
+
             }
+
+
+            else if (turns % 5 == 0)
+            {
+                //Create Signature Card  and give it to players...
+                Console.WriteLine("SIGNATURE TIME");
+            }
+
+            else if (turns > 5)
+            {
+                Console.WriteLine("more than 5");
+            }
+
         }
 
 
