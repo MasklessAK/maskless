@@ -1,5 +1,9 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+
+
 
 class Luchador
 {
@@ -163,4 +167,252 @@ class Luchador
         return player1;
     }
 
+
+
+
+
+
+
+
+
+
+
+    public static void playcard(int Turns, List<Card> playerhand, Luchador PLAYER1, Luchador CPU, List<Card> temp, List<Card> PDeck, List<Card> pgraveyard)
+    {
+        Luchador luchadorupdate = new Luchador();
+        int playerhandlenght = playerhand.Count();
+        int turns = Turns;
+        List<Card> tempcard = temp;
+        List<Card> Pdeck = PDeck;
+        List<Card> PGraveyard = pgraveyard;
+
+
+
+        Console.WriteLine("Press 1 to Play a Card | Press 2 to change a card:  ");
+        int P1selection = Convert.ToInt32(Console.ReadLine());
+        Console.WriteLine("\n");
+
+
+        //**********************************************PLAY A CARD***********************************************************************************************
+
+        if (P1selection == 1)
+        {
+            DamageCalc(turns, playerhandlenght, playerhand, PLAYER1, CPU);
+
+            //*********************************************************************PLAY A CARD END***************************************************************************************
+
+
+
+            //***************************************************************CHANGE A CARD***************************************************************************************
+        }
+
+        else if (P1selection == 2)
+        {
+            ChangeCard(playerhandlenght, playerhand, Pdeck, tempcard, PGraveyard);
+
+        }
+    }
+
+
+
+
+    public static void DamageCalc(int turns, int playerhandlenght, List<Card> playerhand, Luchador PLAYER1, Luchador CPU)
+    {
+        if (turns < 4)
+        {
+            int cardselection = 0;
+            Console.WriteLine("Press the number to the left to play the card (P1): ");
+            cardselection = Convert.ToInt32(Console.ReadLine());
+            cardselection = cardselection - 1;
+
+
+            if (cardselection >= playerhandlenght)
+            {
+                while (cardselection >= playerhandlenght)
+                {
+                    Console.WriteLine("Again...Press the number to the left to play the card: ");
+                    cardselection = Convert.ToInt32(Console.ReadLine());
+                    cardselection = cardselection - 1;
+                }
+            }
+
+
+            Console.WriteLine("\nP1 You played " + playerhand[cardselection].NAME);
+
+
+
+            //CHECK THE TYPE OF CARD. BASED ON THAT WE CAN DETERMINE DAMAGE.
+
+            if (playerhand[cardselection].TYPE == "LIGHT ATTACK" || playerhand[cardselection].TYPE == "S - LIGHT ATTACK")
+            {
+
+                //Console.WriteLine("You played a light attack");
+                // P1Board.Push(P1Hand[cardselection]);
+                //P1TEMP = P1Board.Peek //Carta que jugo
+                // P1Hand.Remove(P1Hand[cardselection]);
+
+
+                int DAMAGE = 0;
+                int divided = 2;
+
+                DAMAGE = (PLAYER1.PWR + playerhand[cardselection].DMG) / divided;
+                Console.WriteLine(CPU.NAME + " started with " + CPU.HP + " HP ");
+                Console.WriteLine(PLAYER1.NAME + " did " + DAMAGE + " to " + CPU.NAME);
+                CPU.HP = CPU.HP - DAMAGE;
+                Console.WriteLine(CPU.NAME + " Now has " + CPU.HP + " HP ");
+            }
+
+
+
+
+
+
+            else if (playerhand[cardselection].TYPE == "HEAVY ATTACK" || playerhand[cardselection].TYPE == "S - HEAVY ATTACK" || playerhand[cardselection].TYPE == "GIMMICK")
+            {
+                Console.WriteLine("1 Play This Turn");
+
+
+
+            }
+
+        }
+        else
+        {
+            Console.WriteLine("more than 5");
+        }
+
+    }
+
+
+
+
+
+    public static void ChangeCard(int handlength, List<Card> playerhand, List<Card> P1deck, List<Card> tempcard, List<Card> P1Graveyard)
+    {
+
+        List<Card> PlayerHand = playerhand;
+        int playerhandlenght = PlayerHand.Count();
+        List<Card> Graveyard = P1Graveyard;
+        List<Card> Deck = P1deck;
+        List<Card> TEMPCARD = tempcard;
+
+
+        //List<Card> TEMP = new List<Card>();
+        Console.WriteLine("Press the number to the left to change the card: ");
+        int selection = Convert.ToInt32(Console.ReadLine());
+        Console.WriteLine("You discarded " + PlayerHand[selection - 1].NAME);
+
+
+        int gravelength = Graveyard.Count();
+        int i = 0;
+        if (Deck.Count() == 0)
+        {
+
+            while (i != gravelength)
+            {
+                Deck.Add(Graveyard[0]);
+                Graveyard.Remove(Graveyard[0]);
+
+                i++;
+            }
+        }
+        else
+        {
+            //SWITCHES CARD AND DRAWS A NEW ONE FROM DECK
+            TEMPCARD.Add(Deck[0]);
+            Deck.Remove(Deck[0]);
+            Deck.Add(PlayerHand[selection - 1]);
+
+            PlayerHand.Remove(PlayerHand[selection - 1]);
+            PlayerHand.Add(TEMPCARD[0]);
+            Console.WriteLine("You drew " + TEMPCARD[0].NAME + "\n\n");
+            TEMPCARD.Remove(TEMPCARD[0]);
+            Deck = Card.Shuffle(Deck);
+
+        }
+
+    }
+
+
+
+
+
+
+
+
+    public void Changestats(Luchador player1, Luchador player2, Card tempcard)
+    {
+        Luchador PLAYER1 = player1;
+        Luchador PLAYER2 = player1;
+        Card P1TEMP = tempcard;
+
+        //ADD BUFFS OR NERFS OF THE CARDS
+        Console.WriteLine("\nDEFAULT PLAYER 1 POWER: " + PLAYER1.PWR);
+        Console.WriteLine("DEFAULT PLAYER 1 SPEED: " + PLAYER1.SPD);
+        Console.WriteLine("DEFAULT CPU POWER: " + PLAYER2.PWR);
+        Console.WriteLine("DEFAULT CPU SPEED: " + PLAYER2.SPD);
+
+        if (P1TEMP.GIMMICK == "FACE")
+        {
+            if (P1TEMP.TYPE1 == "PWR")
+            {
+                PLAYER1.PWR = PLAYER1.PWR + P1TEMP.EFF1;
+                Console.WriteLine("PLAYER 1 POWER: " + PLAYER1.PWR);
+
+
+            }
+            else if (P1TEMP.TYPE1 == "SPD")
+            {
+                PLAYER1.SPD = PLAYER1.SPD + P1TEMP.EFF1;
+                Console.WriteLine("PLAYER 1 SPEED: " + PLAYER1.SPD);
+
+            }
+            else if (P1TEMP.TYPE1 == "RESLNCY")
+            {
+                PLAYER1.RESLNCY = PLAYER1.RESLNCY + P1TEMP.EFF1;
+            }
+            else if (P1TEMP.TYPE1 == "TCHNQ")
+            {
+                PLAYER1.TCHNQ = PLAYER1.TCHNQ + P1TEMP.EFF1;
+            }
+        }
+
+
+        else if (P1TEMP.GIMMICK == "HEEL")
+        {
+            if (P1TEMP.TYPE1 == "PWR")
+            {
+                PLAYER2.PWR = PLAYER2.PWR + P1TEMP.EFF1;
+                Console.WriteLine("CPU POWER: " + PLAYER2.PWR);
+            }
+            else if (P1TEMP.TYPE1 == "SPD")
+            {
+                PLAYER2.SPD = PLAYER2.SPD + P1TEMP.EFF1;
+                Console.WriteLine("CPU SPEED: " + PLAYER2.SPD);
+            }
+            else if (P1TEMP.TYPE1 == "RESLNCY")
+            {
+                PLAYER2.RESLNCY = PLAYER2.RESLNCY + P1TEMP.EFF1;
+            }
+            else if (P1TEMP.TYPE1 == "TCHNQ")
+            {
+                PLAYER2.TCHNQ = PLAYER2.TCHNQ + P1TEMP.EFF1;
+            }
+        }
+
+        else
+        {
+            Console.WriteLine("--------------------");
+
+        }
+
+
+
+
+    }
 }
+
+
+
+
+

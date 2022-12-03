@@ -113,7 +113,7 @@ class Card
                 {
                     fullcards[i, k] = column;
                     //Console.WriteLine(column);
-                    // Console.WriteLine(fullcards[i,k]);
+                    //Console.WriteLine(fullcards[i,k]);
                     if (k == 13)
                     {
                         k = 0;
@@ -197,8 +197,7 @@ class Card
 
 
             }
-            //CardSet = Shuffle(CardSet);
-            Console.WriteLine(CardSet[8].ID + "_______");
+            //Console.WriteLine(CardSet[8].ID + "_______");
             return CardSet;
         }
         catch (Exception e)
@@ -210,4 +209,45 @@ class Card
         return CardSet;
     }
 
+
+
+
+    public static void checkcooldownQ(Luchador player, Queue<Card> cooldownq, List<Card> playerhand)
+    {
+        //CHECK THE COOLDOWN QUEUE FOR P1
+        Luchador PLAYER = player;
+        try
+        {
+
+            List<Card> PLayerhand = playerhand;
+            Card PEEK = cooldownq.Peek();
+            if (PEEK != null)
+            {
+                foreach (Card card in cooldownq)
+                {
+                    if (card.COOLCOUNT == card.COOLDOWN)
+                    {
+                        card.COOLCOUNT = 0;
+                        PLayerhand.Add(cooldownq.Dequeue());
+                    }
+
+                    else if (card.COOLCOUNT < card.COOLDOWN)
+                    {
+                        card.COOLCOUNT = card.COOLCOUNT + 1;
+                    }
+                    //COOLCOUNT +1... if COOLCOUNT = COOLDOWN ... RESET COOLCOUNT AND SEND IT TO THE HAND!
+                    // IF NOT INCREASE COOLCOUNT AND KEEP IT MOVING
+                    // CAN WE USE THE COOLDOWN LOOP TO UPDATE CHARACTER STATS SINCE WE HAVE ALL THE INFO HERE.
+                    Console.WriteLine(card.NAME + " has cooled " + card.COOLCOUNT + " of " + card.COOLDOWN + " (turns) for you to use.");
+                }
+                Console.WriteLine("\n");
+            }
+
+        }
+        catch (Exception e)
+        {
+
+            Console.WriteLine(PLAYER.NAME + " Cooldown " + e.Message);
+        }
+    }
 }
