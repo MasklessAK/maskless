@@ -63,7 +63,7 @@ class Program
         Card P1FINISHER = new Card();
         Card P1PIN = new Card("MASK-S01-0070", "SMALL PACKAGE", "Oldest trick in the book", 0, "PIN", "NEUTRAL", 0, 0, "PINS YOUR OPPONENT", 1, 0, "NONE", "NONE", 0);
 
-        // create a temp card to use in for buff and nefrs on character
+        // create a temp card to use in for buff and nerfs on character
         Card CPUTEMP = new Card();
         Card CPUSPECIAL = new Card();
         Card CPUFINISHER = new Card();
@@ -103,7 +103,7 @@ class Program
 
 
 
-        int turns = 4;
+        int turns = 0;
         bool pinned = false;
         int P1selection = 0;
         int CPUselection = 0;
@@ -116,7 +116,6 @@ class Program
 
 
 
-        //GameMechanics.draw5(P1, CPUDECK, P1Hand, CPUHand);
 
         // DRAW 5 CARDS FOR PLAYER 1
         GameMechanics.Draw(5, P1, P1Hand);
@@ -146,156 +145,24 @@ class Program
 
         Card.checkcooldownQ(PLAYER1, P1Cooldown, P1Hand);
         Card.checkcooldownQ(CPU, CPUCooldown, CPUHand);
+
+        GameMechanics.CheckEmptyHand(P1Hand, P1, P1Cooldown, P1Graveyard);
+        GameMechanics.CheckEmptyHand(CPUHand, CPUDECK, CPUCooldown, CPUGraveyard);
+
         GameMechanics.Turn5(turns, P1Hand, P1Graveyard, P1, P1SPECIAL);
+        GameMechanics.Turn5(turns, CPUHand, CPUGraveyard, CPUDECK, CPUSPECIAL);
 
-
-
-        /*/ CHECK FOR EMPTY HAND P1
-        if (P1Hand.Count() == 0)
-        {
-            //check the deck
-            int cardsremainingindeck = P1.Count();
-            int cardsincooldown = P1Cooldown.Count;
-            int sac = 0;
-            if (cardsremainingindeck == 0 && cardsincooldown == 0)
-            {
-                Console.WriteLine("You have no cards remaining in the Deck");
-                int len = P1Hand.Count();
-                //Console.WriteLine(len);
-                int i = 0;
-                while (i != len)
-                {
-                    if (P1Hand[i].NAME != "PIN")
-                    {
-                        i++;
-                    }
-                    else if (P1Hand[i].NAME == "PIN")
-                    {
-                        Console.WriteLine("Do you want to sacrifice a PIN card to regain the cards from your graveyard? 1-Yes | 2-No ");
-                        sac = Convert.ToInt32(Console.ReadLine());
-                        if (sac == 1)
-                        {
-                            int gravecount = P1Graveyard.Count();
-                            int x = 0;
-                            while (x != gravecount)
-                            {
-                                P1.Add(P1Graveyard[x]);
-                                x++;
-                            }
-                            P1Graveyard.Clear();
-                            P1Hand.Remove(P1Hand[i]);
-                            P1 = Card.Shuffle(P1);
-                            P1Hand.Add(P1[0]);
-                            P1Hand.Add(P1[1]);
-                            P1Hand.Add(P1[2]);
-
-                        }
-
-                        else if (sac == 2)
-                        {
-                            Console.WriteLine("You are not sacrificing your PIN, you can't draw any more cards");
-                        }
-
-                    }
-
-
-
-
-                }
-
-
-            }
-            else
-            { //IF HAND IS EMPTY DRAW 1
-                P1Hand.Add(P1[0]);
-                P1.Remove(P1[0]);
-                P1Hand.Add(P1[0]);
-                P1.Remove(P1[0]);
-                P1Hand.Add(P1[0]);
-                P1.Remove(P1[0]);
-
-            }
-
-        }*/
-
-
-        // CHECK FOR EMPTY HAND CPU
-        if (CPUHand.Count() == 0)
-        {
-            //check the deck
-            int cardsremainingindeckcpu = CPUDECK.Count();
-            int cardsincooldowncpu = CPUCooldown.Count;
-            int sac = 0;
-            if (cardsremainingindeckcpu == 0 && cardsincooldowncpu == 0)
-            {
-                Console.WriteLine("You have no cards remaining in the Deck");
-                int lencpuhand = CPUHand.Count();
-                //Console.WriteLine(len);
-                int p = 0;
-                while (p != lencpuhand)
-                {
-                    if (CPUHand[p].NAME != "PIN")
-                    {
-                        p++;
-                    }
-                    else if (CPUHand[p].NAME == "PIN")
-                    {
-                        Console.WriteLine("Do you want to sacrifice a PIN card to regain the cards from your graveyard? 1-Yes | 2-No ");
-                        sac = Convert.ToInt32(Console.ReadLine());
-                        if (sac == 1)
-                        {
-                            int gravecountcpu = CPUGraveyard.Count();
-                            int w = 0;
-                            while (w != gravecountcpu)
-                            {
-                                CPUDECK.Add(P1Graveyard[w]);
-                                w++;
-                            }
-                            CPUGraveyard.Clear();
-                            CPUHand.Remove(CPUHand[p]);
-                            CPUDECK = Card.Shuffle(CPUDECK);
-                            CPUHand.Add(CPUDECK[0]);
-                            CPUHand.Add(CPUDECK[1]);
-                            CPUHand.Add(CPUDECK[2]);
-
-                        }
-
-                        else if (sac == 2)
-                        {
-                            Console.WriteLine("You are not sacrificing your PIN, you can't draw any more cards");
-                        }
-
-                    }
-
-
-
-
-                }
-
-
-
-            }
-            else
-            { //IF HAND IS EMPTY DRAW 1
-                CPUHand.Add(CPUDECK[0]);
-                CPUDECK.Remove(CPUDECK[0]);
-                CPUHand.Add(CPUDECK[0]);
-                CPUDECK.Remove(CPUDECK[0]);
-                CPUHand.Add(CPUDECK[0]);
-                CPUDECK.Remove(CPUDECK[0]);
-            }
-        }
 
 
 
         GameMechanics.Showhand(P1Hand, PLAYER1.NAME); //SHOW PLAYER 1 HAND
-        Luchador.playcard(turns, P1Hand, PLAYER1, CPU, P1TEMPCARD, P1, P1Graveyard);
+        Luchador.playcard(turns, P1Hand, PLAYER1, CPU, P1TEMPCARD, P1TEMP, P1, P1Graveyard, P1FINISHER, P1PIN, pinned, P1Cooldown, P1Board);
 
 
 
 
         GameMechanics.Showhand(CPUHand, CPU.NAME); //SHOW CPU HAND
-        Luchador.playcard(turns, CPUHand, CPU, PLAYER1, CPUTEMPCARD, CPUDECK, CPUGraveyard);
+        Luchador.playcard(turns, CPUHand, CPU, PLAYER1, CPUTEMPCARD, CPUTEMP, CPUDECK, CPUGraveyard, CPUFINISHER, CPUPIN, pinned, CPUCooldown, CPUBoard);
 
 
 
@@ -306,25 +173,8 @@ class Program
 
 
 
-        Console.WriteLine("TIMES USED CODE");
-        //*****************************************************************TIMES USED CODE*****************************************************************************************
-        P1TEMP.TIMESUSED = P1TEMP.TIMESUSED + 1;
-        if (P1TEMP.TIMESUSED == P1TEMP.LIMIT)
-        {
-            P1Graveyard.Add(P1TEMP);
-            P1Board.Clear();
-            Console.WriteLine("The crowd is bored of the " + P1TEMP.NAME);
-            //
 
-        }
-        else if (P1TEMP.TIMESUSED < P1TEMP.LIMIT)
-        {
-            Console.WriteLine("What a " + P1TEMP.NAME);
-            P1Cooldown.Enqueue(P1TEMP);
-            P1Board.Clear();
-            // TEMP = null;
-        }
-        //*****************************************************************TIMES USED CODE ENDS****************************************************************************
+
         //*****************************************************************BUFF CODE STARTS********************************************************************************
         if (P1TEMP.TYPE == "S - LIGHT ATTACK" || P1TEMP.TYPE == "S - HEAVY ATTACK" || P1TEMP.TYPE == "GIMMICK")
         {

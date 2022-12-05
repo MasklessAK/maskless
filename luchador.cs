@@ -66,11 +66,11 @@ class Luchador
         Luchador player1;
 
 
-        int MAX = 25;
+        int MAX = 20;
         int power = 0, speed = 0, resiliency = 0, technique = 0;
         int hp = 100;
         int AA = 0;
-        int pointsleft = 25;
+        int pointsleft = 20;
         string name;
         string gimmick = "HEEL";
         string ability = "UNDERDOG";
@@ -110,7 +110,7 @@ class Luchador
 
         while (AA != MAX)
         {
-            Console.WriteLine("You have 25 points to use in:\n");
+            Console.WriteLine("You have 20 points to use in:\n");
             Console.WriteLine("POWER | SPEED | RESILIENCY | TECHNIQUE \n");
             Console.WriteLine("POWER: ");
             power = Convert.ToInt32(Console.ReadLine());
@@ -177,11 +177,20 @@ class Luchador
 
 
 
-    public static void playcard(int Turns, List<Card> playerhand, Luchador PLAYER1, Luchador CPU, List<Card> temp, List<Card> PDeck, List<Card> pgraveyard)
+    public static void playcard(int Turns, List<Card> PLAYERHAND, Luchador PLAYER1, Luchador CPU, List<Card> temp, Card buff, List<Card> PDeck, List<Card> pgraveyard, Card FINISHER, Card PIN, bool getpin, Queue<Card> cool, Stack<Card> board)
     {
+        bool pinned = getpin;
         Luchador luchadorupdate = new Luchador();
+        Card finisher = FINISHER;
+        Card pin = PIN;
+        Card buffcard = buff;
+        Queue<Card> Cooldown = cool;
+        Stack<Card> Board = board;
+        List<Card> playerhand = PLAYERHAND;
         int playerhandlenght = playerhand.Count();
+        int divided;
         int turns = Turns;
+        int selection = 0;
         List<Card> tempcard = temp;
         List<Card> Pdeck = PDeck;
         List<Card> PGraveyard = pgraveyard;
@@ -195,31 +204,11 @@ class Luchador
 
         //**********************************************PLAY A CARD***********************************************************************************************
 
+
+
         if (P1selection == 1)
         {
-            DamageCalc(turns, playerhandlenght, playerhand, PLAYER1, CPU);
 
-            //*********************************************************************PLAY A CARD END***************************************************************************************
-
-
-
-            //***************************************************************CHANGE A CARD***************************************************************************************
-        }
-
-        else if (P1selection == 2)
-        {
-            ChangeCard(playerhandlenght, playerhand, Pdeck, tempcard, PGraveyard);
-
-        }
-    }
-
-
-
-
-    public static void DamageCalc(int turns, int playerhandlenght, List<Card> playerhand, Luchador PLAYER1, Luchador CPU)
-    {
-        if (turns < 4)
-        {
             int cardselection = 0;
             Console.WriteLine("Press the number to the left to play the card (P1): ");
             cardselection = Convert.ToInt32(Console.ReadLine());
@@ -238,48 +227,140 @@ class Luchador
 
 
             Console.WriteLine("\nP1 You played " + playerhand[cardselection].NAME);
+            buffcard = playerhand[cardselection];
 
 
 
-            //CHECK THE TYPE OF CARD. BASED ON THAT WE CAN DETERMINE DAMAGE.
-
-            if (playerhand[cardselection].TYPE == "LIGHT ATTACK" || playerhand[cardselection].TYPE == "S - LIGHT ATTACK")
+            if (turns < 4)
             {
+                //CHECK THE TYPE OF CARD. BASED ON THAT WE CAN DETERMINE DAMAGE.
 
-                //Console.WriteLine("You played a light attack");
-                // P1Board.Push(P1Hand[cardselection]);
-                //P1TEMP = P1Board.Peek //Carta que jugo
-                // P1Hand.Remove(P1Hand[cardselection]);
+                if (playerhand[cardselection].TYPE == "LIGHT ATTACK" || playerhand[cardselection].TYPE == "S - LIGHT ATTACK")
+                {
 
+                    //Console.WriteLine("You played a light attack");
+                    // P1Board.Push(P1Hand[cardselection]);
+                    //P1TEMP = P1Board.Peek //Carta que jugo
+                    // P1Hand.Remove(P1Hand[cardselection]);
 
-                int DAMAGE = 0;
-                int divided = 2;
-
-                DAMAGE = (PLAYER1.PWR + playerhand[cardselection].DMG) / divided;
-                Console.WriteLine(CPU.NAME + " started with " + CPU.HP + " HP ");
-                Console.WriteLine(PLAYER1.NAME + " did " + DAMAGE + " to " + CPU.NAME);
-                CPU.HP = CPU.HP - DAMAGE;
-                Console.WriteLine(CPU.NAME + " Now has " + CPU.HP + " HP ");
-            }
+                    divided = 2;
+                    DamageCalc(divided, cardselection, playerhandlenght, playerhand, PLAYER1, CPU);
 
 
+                }
+
+
+                else if (playerhand[cardselection].TYPE == "HEAVY ATTACK" || playerhand[cardselection].TYPE == "S - HEAVY ATTACK" || playerhand[cardselection].TYPE == "GIMMICK")
+                {
+                    Console.WriteLine("1 Play This Turn");
 
 
 
-
-            else if (playerhand[cardselection].TYPE == "HEAVY ATTACK" || playerhand[cardselection].TYPE == "S - HEAVY ATTACK" || playerhand[cardselection].TYPE == "GIMMICK")
-            {
-                Console.WriteLine("1 Play This Turn");
-
-
+                }
 
             }
+            else
+            {
 
+                //CHECK THE TYPE OF CARD. BASED ON THAT WE CAN DETERMINE DAMAGE.
+
+                if (playerhand[cardselection].TYPE == "LIGHT ATTACK" || playerhand[cardselection].TYPE == "S - LIGHT ATTACK")
+                {
+
+                    //Console.WriteLine("You played a light attack");
+                    // P1Board.Push(P1Hand[cardselection]);
+                    //P1TEMP = P1Board.Peek //Carta que jugo
+                    // P1Hand.Remove(P1Hand[cardselection]);
+
+                    divided = 2;
+                    DamageCalc(divided, cardselection, playerhandlenght, playerhand, PLAYER1, CPU);
+
+
+                }
+
+
+                else if (playerhand[cardselection].TYPE == "HEAVY ATTACK" || playerhand[cardselection].TYPE == "S - HEAVY ATTACK")
+                {
+                    divided = 3;
+                    DamageCalc(divided, cardselection, playerhandlenght, playerhand, PLAYER1, CPU);
+                }
+
+
+                else if (playerhand[cardselection].TYPE == "GIMMICK")
+                {
+
+                    Console.WriteLine("GIMMICK CARD");
+
+                }
+
+                else if (playerhand[cardselection].TYPE == "SPECIAL")
+                {
+                    playerhand.Add(finisher);
+                    Console.WriteLine("You now can use you Finisher.");
+                    divided = 3;
+                    DamageCalc(divided, cardselection, playerhandlenght, playerhand, PLAYER1, CPU);
+
+                }
+
+
+                else if (playerhand[cardselection].TYPE == "FINISHER")
+                {
+                    Console.WriteLine("Do you want to pin your opponent?\n"
+                                     + "1- Yes\n" +
+                                      "2- No");
+                    selection = Convert.ToInt32(Console.ReadLine());
+
+                    if (selection == 1)
+                    {
+                        divided = 3;
+                        DamageCalc(divided, cardselection, playerhandlenght, playerhand, PLAYER1, CPU);
+                        pinned = GameMechanics.PinOpponent(PLAYER1, CPU);
+                        //run pin mechanic... 
+                    }
+                    else if (selection == 2)
+                    {
+                        divided = 3;
+                        DamageCalc(divided, cardselection, playerhandlenght, playerhand, PLAYER1, CPU);
+                        playerhand.Add(pin);
+                        Console.WriteLine("You have a pinning card in your hands. You can use this card to pin the opponent.");
+                    }
+
+                }
+                else if (playerhand[cardselection].TYPE == "PIN")
+                {
+                    pinned = GameMechanics.PinOpponent(PLAYER1, CPU);
+                }
+            }
+
+            //*********************************************************************PLAY A CARD END***************************************************************************************
+
+
+
+            //***************************************************************CHANGE A CARD***************************************************************************************
         }
-        else
+
+        else if (P1selection == 2)
         {
-            Console.WriteLine("more than 5");
+            ChangeCard(playerhandlenght, playerhand, Pdeck, tempcard, PGraveyard);
+
         }
+
+        UpdateUse(buffcard, PGraveyard, Cooldown, Board);
+    }
+
+
+
+
+    public static void DamageCalc(int divided, int cardselection, int playerhandlenght, List<Card> playerhand, Luchador PLAYER1, Luchador CPU)
+    {
+        int DAMAGE = (PLAYER1.PWR + playerhand[cardselection].DMG);
+        DAMAGE = DAMAGE / divided;
+        //Console.WriteLine(PLAYER1.PWR + " Power | " + playerhand[cardselection].DMG + " CARD PWR ");
+        //Console.WriteLine(DAMAGE + "DAMAGE");
+        Console.WriteLine(CPU.NAME + " started with " + CPU.HP + " HP ");
+        Console.WriteLine(PLAYER1.NAME + " did " + DAMAGE + " to " + CPU.NAME);
+        CPU.HP = CPU.HP - DAMAGE;
+        Console.WriteLine(CPU.NAME + " Now has " + CPU.HP + " HP \n");
 
     }
 
@@ -405,10 +486,37 @@ class Luchador
             Console.WriteLine("--------------------");
 
         }
+    }
 
 
 
 
+
+    public static void UpdateUse(Card buffcard, List<Card> grave, Queue<Card> cool, Stack<Card> board)
+    {
+
+        Card Tempcard = buffcard;
+        List<Card> Graveyard = grave;
+        Stack<Card> Board = board;
+        Queue<Card> Cooldown = cool;
+        Console.WriteLine("UPDATE USE");
+
+        Tempcard.TIMESUSED = Tempcard.TIMESUSED + 1;
+        if (Tempcard.TIMESUSED == Tempcard.LIMIT)
+        {
+            Graveyard.Add(Tempcard);
+            Board.Clear();
+            Console.WriteLine("The crowd is bored of the " + Tempcard.NAME);
+
+
+        }
+        else if (Tempcard.TIMESUSED < Tempcard.LIMIT)
+        {
+            Console.WriteLine("What a " + Tempcard.NAME);
+            Cooldown.Enqueue(Tempcard);
+            Board.Clear();
+
+        }
     }
 }
 

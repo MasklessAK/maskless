@@ -137,7 +137,7 @@ class GameMechanics
         List<Card> Playerhand = hand;
         while (i != CARDS)
         {
-            Playerhand.Add(PlayerDeck[i]);
+            Playerhand.Add(PlayerDeck[0]);
             i++;
             PlayerDeck.Remove(PlayerDeck[0]);
 
@@ -216,6 +216,45 @@ class GameMechanics
                 PlayerDeck = Card.Shuffle(PlayerDeck);
             }
         }
+    }
+
+
+
+    public static bool PinOpponent(Luchador Player1, Luchador Player2)
+    {
+        bool pinned = false;
+        double formula = 0;
+        Random rnd = new Random();
+        int pinroll = rnd.Next(1, 10);
+        Console.WriteLine(Player1.TCHNQ + "tech");
+        Console.WriteLine(Player2.RESLNCY + "res");
+        Console.WriteLine(pinroll + "pinroll");
+
+        formula = Math.Abs(Player1.TCHNQ - Player2.RESLNCY) + 1;
+        Console.WriteLine(formula + "absolutepower plus1");
+
+        formula += pinroll;
+        Console.WriteLine(formula + "random plus formula");
+
+        formula *= 10;
+        Console.WriteLine(formula);
+        Player2.HP = 10;
+
+        if (Player2.HP >= formula)
+        {
+            pinned = false;
+            Console.WriteLine(Player2.NAME + " kicked out!");
+        }
+        else
+        {
+
+            pinned = true;
+            Console.WriteLine("1.2.3 " + Player2.NAME + " fue planchado! The match has ended " + Player1.NAME + " wins");
+
+        }
+
+
+        return pinned;
     }
 
 }
