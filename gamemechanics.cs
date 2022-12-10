@@ -250,6 +250,8 @@ class GameMechanics
 
             pinned = true;
             Console.WriteLine("1.2.3 " + Player2.NAME + " fue planchado! The match has ended " + Player1.NAME + " wins");
+            return pinned;
+
 
         }
 

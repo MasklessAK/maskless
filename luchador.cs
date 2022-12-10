@@ -1,4 +1,4 @@
-using System;
+MASKLEusing System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -177,7 +177,7 @@ class Luchador
 
 
 
-    public static void playcard(int Turns, List<Card> PLAYERHAND, Luchador PLAYER1, Luchador CPU, List<Card> temp, Card buff, List<Card> PDeck, List<Card> pgraveyard, Card FINISHER, Card PIN, bool getpin, Queue<Card> cool, Stack<Card> board)
+    public static void playcard(int Turns, List<Card> PLAYERHAND, Luchador PLAYER1, Luchador CPU, List<Card> temp, Card buff, List<Card> PDeck, List<Card> pgraveyard, Card FINISHER, Card PIN, bool getpin, Queue<Card> cool, Stack<Card> board, List<Card> changedlist)
     {
         bool pinned = getpin;
         Luchador luchadorupdate = new Luchador();
@@ -194,6 +194,7 @@ class Luchador
         List<Card> tempcard = temp;
         List<Card> Pdeck = PDeck;
         List<Card> PGraveyard = pgraveyard;
+        List<Card> CardList = changedlist;
 
 
 
@@ -210,7 +211,7 @@ class Luchador
         {
 
             int cardselection = 0;
-            Console.WriteLine("Press the number to the left to play the card (P1): ");
+            Console.WriteLine("Press the number to the left to play the card: ");
             cardselection = Convert.ToInt32(Console.ReadLine());
             cardselection = cardselection - 1;
 
@@ -226,16 +227,18 @@ class Luchador
             }
 
 
-            Console.WriteLine("\nP1 You played " + playerhand[cardselection].NAME);
-            buffcard = playerhand[cardselection];
+
 
 
 
             if (turns < 4)
             {
                 //CHECK THE TYPE OF CARD. BASED ON THAT WE CAN DETERMINE DAMAGE.
-
-                if (playerhand[cardselection].TYPE == "LIGHT ATTACK" || playerhand[cardselection].TYPE == "S - LIGHT ATTACK")
+                Console.WriteLine("\n" + PLAYER1 + " You played " + playerhand[cardselection].NAME);
+                buffcard = playerhand[cardselection];
+                //Console.WriteLine(playerhand[cardselection].NAME);
+                //Console.WriteLine(buffcard.NAME);
+                if (buffcard.TYPE == "LIGHT ATTACK" || buffcard.TYPE == "S - LIGHT ATTACK")
                 {
 
                     //Console.WriteLine("You played a light attack");
@@ -250,7 +253,7 @@ class Luchador
                 }
 
 
-                else if (playerhand[cardselection].TYPE == "HEAVY ATTACK" || playerhand[cardselection].TYPE == "S - HEAVY ATTACK" || playerhand[cardselection].TYPE == "GIMMICK")
+                else if (buffcard.TYPE == "HEAVY ATTACK" || buffcard.TYPE == "S - HEAVY ATTACK" || buffcard.TYPE == "GIMMICK")
                 {
                     Console.WriteLine("1 Play This Turn");
 
@@ -263,8 +266,11 @@ class Luchador
             {
 
                 //CHECK THE TYPE OF CARD. BASED ON THAT WE CAN DETERMINE DAMAGE.
+                Console.WriteLine("\n" + PLAYER1.NAME + " You played " + playerhand[cardselection].NAME);
+                buffcard = playerhand[cardselection];
 
-                if (playerhand[cardselection].TYPE == "LIGHT ATTACK" || playerhand[cardselection].TYPE == "S - LIGHT ATTACK")
+
+                if (buffcard.TYPE == "LIGHT ATTACK" || buffcard.TYPE == "S - LIGHT ATTACK")
                 {
 
                     //Console.WriteLine("You played a light attack");
@@ -279,21 +285,21 @@ class Luchador
                 }
 
 
-                else if (playerhand[cardselection].TYPE == "HEAVY ATTACK" || playerhand[cardselection].TYPE == "S - HEAVY ATTACK")
+                else if (buffcard.TYPE == "HEAVY ATTACK" || buffcard.TYPE == "S - HEAVY ATTACK")
                 {
                     divided = 3;
                     DamageCalc(divided, cardselection, playerhandlenght, playerhand, PLAYER1, CPU);
                 }
 
 
-                else if (playerhand[cardselection].TYPE == "GIMMICK")
+                else if (buffcard.TYPE == "GIMMICK")
                 {
 
                     Console.WriteLine("GIMMICK CARD");
 
                 }
 
-                else if (playerhand[cardselection].TYPE == "SPECIAL")
+                else if (buffcard.TYPE == "SPECIAL")
                 {
                     playerhand.Add(finisher);
                     Console.WriteLine("You now can use you Finisher.");
@@ -303,7 +309,7 @@ class Luchador
                 }
 
 
-                else if (playerhand[cardselection].TYPE == "FINISHER")
+                else if (buffcard.TYPE == "FINISHER")
                 {
                     Console.WriteLine("Do you want to pin your opponent?\n"
                                      + "1- Yes\n" +
@@ -326,7 +332,16 @@ class Luchador
                     }
 
                 }
-                else if (playerhand[cardselection].TYPE == "PIN")
+
+
+                else if (buffcard.TYPE == "WEAPON")
+                {
+
+                }
+
+
+
+                else if (buffcard.TYPE == "PIN")
                 {
                     pinned = GameMechanics.PinOpponent(PLAYER1, CPU);
                 }
@@ -344,8 +359,12 @@ class Luchador
             ChangeCard(playerhandlenght, playerhand, Pdeck, tempcard, PGraveyard);
 
         }
-
+        playerhand.Remove(buffcard);//REMOVE THE CARD YOU PLAYED FROM HAND
         UpdateUse(buffcard, PGraveyard, Cooldown, Board);
+        Changestats(PLAYER1, CPU, buffcard, buffcard.EFF1, buffcard.EFF2);
+        BuffNerf(buffcard, CardList, PLAYER1, CPU, buffcard.EFF1, buffcard.EFF2);
+
+
     }
 
 
@@ -362,6 +381,34 @@ class Luchador
         CPU.HP = CPU.HP - DAMAGE;
         Console.WriteLine(CPU.NAME + " Now has " + CPU.HP + " HP \n");
 
+
+    }
+
+    public static void UpdateUse(Card buffcard, List<Card> grave, Queue<Card> cool, Stack<Card> board)
+    {
+
+        Card Tempcard = buffcard;
+        List<Card> Graveyard = grave;
+        Stack<Card> Board = board;
+        Queue<Card> Cooldown = cool;
+        Console.WriteLine("UPDATE USE");
+
+        Tempcard.TIMESUSED = Tempcard.TIMESUSED + 1;
+        if (Tempcard.TIMESUSED == Tempcard.LIMIT)
+        {
+            Graveyard.Add(Tempcard);
+            Board.Clear();
+            Console.WriteLine("The crowd is bored of the " + Tempcard.NAME);
+
+
+        }
+        else if (Tempcard.TIMESUSED < Tempcard.LIMIT)
+        {
+            Console.WriteLine("What a " + Tempcard.NAME);
+            Cooldown.Enqueue(Tempcard);
+            Board.Clear();
+
+        }
     }
 
 
@@ -421,104 +468,288 @@ class Luchador
 
 
 
-    public void Changestats(Luchador player1, Luchador player2, Card tempcard)
+    public static void Changestats(Luchador player1, Luchador player2, Card tempcard, int eff1, int eff2)
     {
         Luchador PLAYER1 = player1;
-        Luchador PLAYER2 = player1;
+        Luchador PLAYER2 = player2;
         Card P1TEMP = tempcard;
+        Console.WriteLine(P1TEMP.NAME + "\n\nwhat is here");
 
         //ADD BUFFS OR NERFS OF THE CARDS
-        Console.WriteLine("\nDEFAULT PLAYER 1 POWER: " + PLAYER1.PWR);
-        Console.WriteLine("DEFAULT PLAYER 1 SPEED: " + PLAYER1.SPD);
-        Console.WriteLine("DEFAULT CPU POWER: " + PLAYER2.PWR);
-        Console.WriteLine("DEFAULT CPU SPEED: " + PLAYER2.SPD);
+        Console.WriteLine(PLAYER1.NAME + "'s POWER: " + PLAYER1.PWR);
+        Console.WriteLine(PLAYER1.NAME + "'s SPEED: " + PLAYER1.SPD);
+        Console.WriteLine(PLAYER2.NAME + "'s POWER: " + PLAYER2.PWR);
+        Console.WriteLine(PLAYER2.NAME + "'s SPEED: " + PLAYER2.SPD);
 
-        if (P1TEMP.GIMMICK == "FACE")
+        if (P1TEMP.TYPE == "FACE")
         {
             if (P1TEMP.TYPE1 == "PWR")
             {
-                PLAYER1.PWR = PLAYER1.PWR + P1TEMP.EFF1;
+                PLAYER1.PWR = PLAYER1.PWR + eff1;
                 Console.WriteLine("PLAYER 1 POWER: " + PLAYER1.PWR);
 
 
             }
             else if (P1TEMP.TYPE1 == "SPD")
             {
-                PLAYER1.SPD = PLAYER1.SPD + P1TEMP.EFF1;
+                PLAYER1.SPD = PLAYER1.SPD + eff1;
                 Console.WriteLine("PLAYER 1 SPEED: " + PLAYER1.SPD);
 
             }
             else if (P1TEMP.TYPE1 == "RESLNCY")
             {
-                PLAYER1.RESLNCY = PLAYER1.RESLNCY + P1TEMP.EFF1;
+                PLAYER1.RESLNCY = PLAYER1.RESLNCY + eff1;
             }
             else if (P1TEMP.TYPE1 == "TCHNQ")
             {
-                PLAYER1.TCHNQ = PLAYER1.TCHNQ + P1TEMP.EFF1;
+                PLAYER1.TCHNQ = PLAYER1.TCHNQ + eff1;
+            }
+
+
+
+            if (P1TEMP.TYPE2 == "PWR")
+            {
+                PLAYER1.PWR = PLAYER1.PWR + eff2;
+                Console.WriteLine("PLAYER 1 POWER: " + PLAYER1.PWR);
+
+
+            }
+            else if (P1TEMP.TYPE2 == "SPD")
+            {
+                PLAYER1.SPD = PLAYER1.SPD + eff2;
+                Console.WriteLine("PLAYER 1 SPEED: " + PLAYER1.SPD);
+
+            }
+            else if (P1TEMP.TYPE2 == "RESLNCY")
+            {
+                PLAYER1.RESLNCY = PLAYER1.RESLNCY + eff2;
+            }
+            else if (P1TEMP.TYPE2 == "TCHNQ")
+            {
+                PLAYER1.TCHNQ = PLAYER1.TCHNQ + eff2;
             }
         }
 
-
-        else if (P1TEMP.GIMMICK == "HEEL")
+        else if (P1TEMP.TYPE == "HEEL")
         {
             if (P1TEMP.TYPE1 == "PWR")
             {
-                PLAYER2.PWR = PLAYER2.PWR + P1TEMP.EFF1;
-                Console.WriteLine("CPU POWER: " + PLAYER2.PWR);
+                PLAYER2.PWR = PLAYER2.PWR + eff1;
+                Console.WriteLine("PLAYER 1 POWER: " + PLAYER1.PWR);
+
+
             }
             else if (P1TEMP.TYPE1 == "SPD")
             {
-                PLAYER2.SPD = PLAYER2.SPD + P1TEMP.EFF1;
-                Console.WriteLine("CPU SPEED: " + PLAYER2.SPD);
+                PLAYER2.SPD = PLAYER2.SPD + eff1;
+                Console.WriteLine("PLAYER 1 SPEED: " + PLAYER1.SPD);
+
             }
             else if (P1TEMP.TYPE1 == "RESLNCY")
             {
-                PLAYER2.RESLNCY = PLAYER2.RESLNCY + P1TEMP.EFF1;
+                PLAYER2.RESLNCY = PLAYER2.RESLNCY + eff1;
             }
             else if (P1TEMP.TYPE1 == "TCHNQ")
             {
-                PLAYER2.TCHNQ = PLAYER2.TCHNQ + P1TEMP.EFF1;
+                PLAYER2.TCHNQ = PLAYER2.TCHNQ + eff1;
+            }
+
+
+
+            if (P1TEMP.TYPE2 == "PWR")
+            {
+                PLAYER2.PWR = PLAYER2.PWR + eff2;
+                Console.WriteLine("PLAYER 1 POWER: " + PLAYER1.PWR);
+
+
+            }
+            else if (P1TEMP.TYPE2 == "SPD")
+            {
+                PLAYER2.SPD = PLAYER2.SPD + eff2;
+                Console.WriteLine("PLAYER 1 SPEED: " + PLAYER1.SPD);
+
+            }
+            else if (P1TEMP.TYPE2 == "RESLNCY")
+            {
+                PLAYER2.RESLNCY = PLAYER2.RESLNCY + eff2;
+            }
+            else if (P1TEMP.TYPE2 == "TCHNQ")
+            {
+                PLAYER2.TCHNQ = PLAYER2.TCHNQ + eff2;
             }
         }
+        //ADD HEEL IF BECAUSE ITS NECESSARY FOR DEDUCTING SPECIFIC PLAYERS
+        Console.WriteLine("\nUPDATE INFO:");
+        Console.WriteLine(PLAYER1.NAME + "'s POWER: " + PLAYER1.PWR);
+        Console.WriteLine(PLAYER1.NAME + "'s SPEED: " + PLAYER1.SPD);
+        Console.WriteLine(PLAYER2.NAME + "'s POWER: " + PLAYER2.PWR);
+        Console.WriteLine(PLAYER2.NAME + "'s SPEED: " + PLAYER2.SPD);
+        Console.WriteLine("\n\n");
 
-        else
-        {
-            Console.WriteLine("--------------------");
-
-        }
     }
 
 
 
 
 
-    public static void UpdateUse(Card buffcard, List<Card> grave, Queue<Card> cool, Stack<Card> board)
+
+
+
+    public static void BuffNerf(Card buffcard, List<Card> bufflist, Luchador p1, Luchador cpu, int effvalue1, int effvalue2)
     {
 
-        Card Tempcard = buffcard;
-        List<Card> Graveyard = grave;
-        Stack<Card> Board = board;
-        Queue<Card> Cooldown = cool;
-        Console.WriteLine("UPDATE USE");
-
-        Tempcard.TIMESUSED = Tempcard.TIMESUSED + 1;
-        if (Tempcard.TIMESUSED == Tempcard.LIMIT)
+        //CardList[c].EFF1
+        Card tempcard = buffcard;
+        List<Card> CardList = bufflist;
+        Luchador PLAYER1 = p1;
+        Luchador PLAYER2 = cpu;
+        int eff1 = effvalue1;
+        int eff2 = effvalue2;
+        if (tempcard.TYPE == "S - LIGHT ATTACK" || tempcard.TYPE == "S - HEAVY ATTACK" || tempcard.TYPE == "GIMMICK")
         {
-            Graveyard.Add(Tempcard);
-            Board.Clear();
-            Console.WriteLine("The crowd is bored of the " + Tempcard.NAME);
+            CardList.Add(tempcard);
+        }
+        else
+        {
+            Console.WriteLine("CARD HAS NO BUFFS OR NERFS");
+        }
 
+
+        int Changeslen = CardList.Count();
+        //Console.WriteLine(Changeslen);
+        int c = 0;
+
+        try
+        {
+            while (c != Changeslen)
+            {
+                if (CardList[c].TURNSBUFFED != 0)
+                {
+                    CardList[c].TURNSBUFFED = CardList[c].TURNSBUFFED - 1;
+                }
+
+
+                else
+                {
+
+                    if (tempcard.TYPE == "FACE")
+                    {
+                        if (tempcard.TYPE1 == "PWR")
+                        {
+                            PLAYER1.PWR = PLAYER1.PWR + eff1;
+                            Console.WriteLine("PLAYER 1 POWER: " + PLAYER1.PWR);
+
+
+                        }
+                        else if (tempcard.TYPE1 == "SPD")
+                        {
+                            PLAYER1.SPD = PLAYER1.SPD + eff1;
+                            Console.WriteLine("PLAYER 1 SPEED: " + PLAYER1.SPD);
+
+                        }
+                        else if (tempcard.TYPE1 == "RESLNCY")
+                        {
+                            PLAYER1.RESLNCY = PLAYER1.RESLNCY + eff1;
+                        }
+                        else if (tempcard.TYPE1 == "TCHNQ")
+                        {
+                            PLAYER1.TCHNQ = PLAYER1.TCHNQ + eff1;
+                        }
+
+
+
+                        if (tempcard.TYPE2 == "PWR")
+                        {
+                            PLAYER1.PWR = PLAYER1.PWR + eff2;
+                            Console.WriteLine("PLAYER 1 POWER: " + PLAYER1.PWR);
+
+
+                        }
+                        else if (tempcard.TYPE2 == "SPD")
+                        {
+                            PLAYER1.SPD = PLAYER1.SPD + eff2;
+                            Console.WriteLine("PLAYER 1 SPEED: " + PLAYER1.SPD);
+
+                        }
+                        else if (tempcard.TYPE2 == "RESLNCY")
+                        {
+                            PLAYER1.RESLNCY = PLAYER1.RESLNCY + eff2;
+                        }
+                        else if (tempcard.TYPE2 == "TCHNQ")
+                        {
+                            PLAYER1.TCHNQ = PLAYER1.TCHNQ + eff2;
+                        }
+                    }
+
+                    else if (tempcard.TYPE == "HEEL")
+                    {
+                        if (tempcard.TYPE1 == "PWR")
+                        {
+                            PLAYER2.PWR = PLAYER2.PWR + eff1;
+                            Console.WriteLine("PLAYER 1 POWER: " + PLAYER1.PWR);
+
+
+                        }
+                        else if (tempcard.TYPE1 == "SPD")
+                        {
+                            PLAYER2.SPD = PLAYER2.SPD + eff1;
+                            Console.WriteLine("PLAYER 1 SPEED: " + PLAYER1.SPD);
+
+                        }
+                        else if (tempcard.TYPE1 == "RESLNCY")
+                        {
+                            PLAYER2.RESLNCY = PLAYER2.RESLNCY + eff1;
+                        }
+                        else if (tempcard.TYPE1 == "TCHNQ")
+                        {
+                            PLAYER2.TCHNQ = PLAYER2.TCHNQ + eff1;
+                        }
+
+
+
+                        if (tempcard.TYPE2 == "PWR")
+                        {
+                            PLAYER2.PWR = PLAYER2.PWR + eff2;
+                            Console.WriteLine("PLAYER 1 POWER: " + PLAYER1.PWR);
+
+
+                        }
+                        else if (tempcard.TYPE2 == "SPD")
+                        {
+                            PLAYER2.SPD = PLAYER2.SPD + eff2;
+                            Console.WriteLine("PLAYER 1 SPEED: " + PLAYER1.SPD);
+
+                        }
+                        else if (tempcard.TYPE2 == "RESLNCY")
+                        {
+                            PLAYER2.RESLNCY = PLAYER2.RESLNCY + eff2;
+                        }
+                        else if (tempcard.TYPE2 == "TCHNQ")
+                        {
+                            PLAYER2.TCHNQ = PLAYER2.TCHNQ + eff2;
+                        }
+                    }
+                    //dpends on the type of card remove buff
+                    CardList.Remove(CardList[c]);
+
+
+                }
+
+                c++;
+
+
+            }
 
         }
-        else if (Tempcard.TIMESUSED < Tempcard.LIMIT)
+        catch (Exception e)
         {
-            Console.WriteLine("What a " + Tempcard.NAME);
-            Cooldown.Enqueue(Tempcard);
-            Board.Clear();
-
+            Console.WriteLine(e);
         }
     }
+
 }
+
+
 
 
 
